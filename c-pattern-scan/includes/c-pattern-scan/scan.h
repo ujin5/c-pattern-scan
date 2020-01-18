@@ -68,7 +68,7 @@ extern "C"
     PS_NOINLINE uintptr_t ps_find_codestyle( uintptr_t start, size_t size, const wchar_t *pattern, const wchar_t *mask );
 
     // find pattern by IDA-style pattern
-    // example: "AA B CC ? DD"
+    // example: "AA B CC ? DD" (double question marks and single bytes are supported)
     // returns NULL on failure
     PS_NOINLINE uintptr_t ps_find_idastyle( uintptr_t start, size_t size, const wchar_t *pattern );
 
