@@ -17,9 +17,15 @@ typedef struct PS_PatternByte
 
 typedef struct PS_Pattern
 {
-    uint8_t        m_amount;  // amount of elements in array
+    size_t         m_amount;  // amount of bytes in array
     PS_PatternByte **m_bytes; // array of bytes
 } PS_Pattern;
+
+typedef struct PS_PatternBatch
+{
+    size_t     m_amount;     // amount of patterns in array
+    PS_Pattern **m_patterns; // array of patterns
+} PS_PatternBatch;
 
 /* funcs */
 

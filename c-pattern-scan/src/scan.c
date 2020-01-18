@@ -21,10 +21,10 @@ PS_NOINLINE bool ps_add_pattern_byte( PS_Pattern *pattern, PS_PatternByte *byte 
     if( pattern && byte )
     {
         // save off last amount and increment
-        uint8_t amount = pattern->m_amount++;
+        size_t amount = pattern->m_amount++;
 
         // make more room if needed
-        PS_PatternByte **bytes = (PS_PatternByte **)( realloc( pattern->m_bytes, sizeof( PS_PatternByte * ) * ( (size_t)amount + 1 ) ) );
+        PS_PatternByte **bytes = (PS_PatternByte **)( realloc( pattern->m_bytes, sizeof( PS_PatternByte * ) * ( amount + 1 ) ) );
         if( bytes )
         {
             // add new byte
@@ -57,8 +57,7 @@ PS_NOINLINE void ps_free_pattern( PS_Pattern *pattern )
             free( pattern->m_bytes );
         }
 
-        pattern->m_amount = 0;
-        pattern->m_bytes  = 0;
+        free( pattern );
     }
 }
 
@@ -78,10 +77,9 @@ PS_NOINLINE PS_PatternByte *ps_make_pattern_byte( uint8_t value, bool is_wildcar
 
 PS_NOINLINE PS_Pattern *ps_build_codestyle( const wchar_t *pattern, const wchar_t *mask )
 {
-    PS_Pattern *ptrn = ps_make_pattern();
-    if( ptrn )
+    if( pattern && mask )
     {
-        // TODO:
+
     }
 
     return 0;
@@ -89,20 +87,22 @@ PS_NOINLINE PS_Pattern *ps_build_codestyle( const wchar_t *pattern, const wchar_
 
 PS_NOINLINE PS_Pattern *ps_build_idastyle( const wchar_t *pattern )
 {
+    PS_Pattern *out = 0;
+
     if( pattern )
     {
-        size_t ptrnlen = wcslen( pattern );
-        if( ptrnlen )
+        size_t ptrn_len = wcslen( pattern );
+        if( ptrn_len )
         {
-            PS_Pattern *ptrn = ps_make_pattern();
-            if( ptrn )
-            {
-                // make a copy of the input string
-                wchar_t *str = _wcsdup( pattern );
+            // make a copy of the input string
+            wchar_t *str = _wcsdup( pattern );
 
-                // clean up input string
-                str = util_trim_pattern_wstr( str );
-                if( str )
+            // clean up input string
+            str = util_trim_pattern_wstr( str );
+            if( str )
+            {
+                PS_Pattern *ptrn = ps_make_pattern();
+                if( ptrn )
                 {
                     wchar_t *next_token = 0;
 
@@ -122,13 +122,13 @@ PS_NOINLINE PS_Pattern *ps_build_idastyle( const wchar_t *pattern )
                             if( !byte )
                             {
                                 ps_free_pattern( ptrn );
-                                return 0;
+                                break;
                             }
 
                             if( !ps_add_pattern_byte( ptrn, byte ) )
                             {
                                 ps_free_pattern( ptrn );
-                                return 0;
+                                break;
                             }
                         }
                         else // probably a byte
@@ -137,17 +137,15 @@ PS_NOINLINE PS_Pattern *ps_build_idastyle( const wchar_t *pattern )
                             size_t tknlen     = wcslen( token );
 
                             // ensure current token is a valid byte
-                            {
-                                if( tknlen == 1 && iswxdigit( token[ 0 ] ) ) // 1-char
-                                    is_vald_byte = true;
-                                else if( tknlen == 2 && iswxdigit( token[ 0 ] ) && iswxdigit( token[ 1 ] ) ) // 2-char
-                                    is_vald_byte = true;
-                            }
+                            if( tknlen == 1 && iswxdigit( token[ 0 ] ) ) // 1-char
+                                is_vald_byte = true;
+                            else if( tknlen == 2 && iswxdigit( token[ 0 ] ) && iswxdigit( token[ 1 ] ) ) // 2-char
+                                is_vald_byte = true;
 
                             if( !is_vald_byte )
                             {
                                 ps_free_pattern( ptrn );
-                                return 0;
+                                break;
                             }
 
                             // attempt to convert the string to a base 16 int and make sure it's still in bounds of a uint8_t
@@ -155,7 +153,7 @@ PS_NOINLINE PS_Pattern *ps_build_idastyle( const wchar_t *pattern )
                             if( !val || val == ULONG_MAX || val > UINT8_MAX )
                             {
                                 ps_free_pattern( ptrn );
-                                return 0;
+                                break;
                             }
 
                             // add normal byte to array
@@ -163,26 +161,27 @@ PS_NOINLINE PS_Pattern *ps_build_idastyle( const wchar_t *pattern )
                             if( !byte )
                             {
                                 ps_free_pattern( ptrn );
-                                return 0;
+                                break;
                             }
 
                             if( !ps_add_pattern_byte( ptrn, byte ) )
                             {
                                 ps_free_pattern( ptrn );
-                                return 0;
+                                break;
                             }
                         }
                     }
 
-                    free( str );
+                    // set final pattern for return
+                    out = ptrn;
                 }
 
-                return ptrn;
+                free( str );
             }
         }
     }
 
-    return 0;
+    return ( out ) ? out : 0;
 }
 
 PS_NOINLINE uintptr_t ps_find_internal( uintptr_t start, size_t size, PS_Pattern *pattern )
