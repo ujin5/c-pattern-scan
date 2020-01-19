@@ -45,16 +45,16 @@ int __cdecl wmain( int argc, wchar_t **argv, wchar_t **envp )
 
     // scan for them
     const auto found_1 = ps_find_idastyle(
+        L"??? ?  ?  ?55 48 89 E5 89 ? ? 8B ? ? 0F AF C0 5D C3? ?  ?   ? ?? ???",
         (uintptr_t)( bytes.data() ),
-        bytes.size(),
-        L"??? ?  ?  ?55 48 89 E5 89 ? ? 8B ? ? 0F AF C0 5D C3? ?  ?   ? ?? ???"
+        bytes.size()
     );
 
     const auto found_2 = ps_find_codestyle(
-        (uintptr_t)( bytes.data() ),
-        bytes.size(),
         L"\x55\x48\x89\xE5\x89\x00\x00\x8B\x00\x00\x0F\xAF\xC0\x5D\xC3",
-        L"xxxxx??x??xxxxx"
+        L"xxxxx??x??xxxxx",
+        (uintptr_t)( bytes.data() ),
+        bytes.size()
     );
 
     // PS_PatternBatches batch;

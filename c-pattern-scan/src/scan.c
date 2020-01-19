@@ -58,16 +58,6 @@ PS_NOINLINE void ps_free_pattern( PS_Pattern *pattern )
     }
 }
 
-PS_NOINLINE bool ps_build_codestyle( PS_Pattern *out_pattern, const wchar_t *pattern, const wchar_t *mask )
-{
-    if( pattern && mask )
-    {
-
-    }
-
-    return false;
-}
-
 PS_NOINLINE bool ps_build_idastyle( PS_Pattern *out_pattern, const wchar_t *pattern )
 {
     if( out_pattern && pattern )
@@ -187,18 +177,25 @@ PS_NOINLINE bool ps_build_idastyle( PS_Pattern *out_pattern, const wchar_t *patt
     return false;
 }
 
-PS_NOINLINE uintptr_t ps_find_internal( uintptr_t start, size_t size, PS_Pattern *pattern )
+PS_NOINLINE bool ps_build_codestyle( PS_Pattern *out_pattern, const wchar_t *pattern, const wchar_t *mask )
 {
-    if( start && size && pattern && pattern->m_bytes && pattern->m_amount )
+    if( out_pattern && pattern && mask )
+    {
+
+    }
+
+    return false;
+}
+
+PS_NOINLINE uintptr_t ps_find_internal( PS_Pattern *pattern, uintptr_t start, size_t size )
+{
+    if( pattern && pattern->m_amount && pattern->m_bytes && start && size )
     {
         uintptr_t found   = 0;
         uint8_t   matched = 0;
 
-        // calculate scan end
-        uintptr_t end = start + size;
-
         // iterate over the range of memory
-        for( uintptr_t i = start; i < end; ++i )
+        for( uintptr_t i = start; i < ( start + size ); ++i )
         {
             if( pattern->m_bytes[ matched ]->m_is_wildcard ) // wildcards are always a 'match'
             {
@@ -231,30 +228,30 @@ PS_NOINLINE uintptr_t ps_find_internal( uintptr_t start, size_t size, PS_Pattern
     return 0;
 }
 
-PS_NOINLINE uintptr_t ps_find_codestyle( uintptr_t start, size_t size, const wchar_t *pattern, const wchar_t *mask )
+PS_NOINLINE uintptr_t ps_find_idastyle( const wchar_t *pattern, uintptr_t start, size_t size )
 {
-    if( start && size )
+    if( pattern && start && size )
     {
         PS_Pattern ptrn;
 
-        if( ps_build_codestyle( &ptrn, pattern, mask ) )
+        if( ps_build_idastyle( &ptrn, pattern ) )
         {
-            return ps_find_internal( start, size, &ptrn );
+            return ps_find_internal( &ptrn, start, size );
         }
     }
 
     return 0;
 }
 
-PS_NOINLINE uintptr_t ps_find_idastyle( uintptr_t start, size_t size, const wchar_t *pattern )
+PS_NOINLINE uintptr_t ps_find_codestyle( const wchar_t *pattern, const wchar_t *mask, uintptr_t start, size_t size )
 {
-    if( start && size )
+    if( pattern && mask && start && size )
     {
         PS_Pattern ptrn;
 
-        if( ps_build_idastyle( &ptrn, pattern ) )
+        if( ps_build_codestyle( &ptrn, pattern, mask ) )
         {
-            return ps_find_internal( start, size, &ptrn );
+            return ps_find_internal( &ptrn, start, size );
         }
     }
 
@@ -271,13 +268,24 @@ PS_NOINLINE void ps_free_pattern_batch( PS_PatternBatches *batch )
 
 PS_NOINLINE void ps_add_idastyle_batch( PS_PatternBatches *batch, uintptr_t *found, const wchar_t *pattern )
 {
-    if( batch && found )
+    if( batch && found && pattern )
     {
 
     }
 }
 
-PS_NOINLINE void ps_find_batch( uintptr_t start, size_t size, PS_PatternBatches *batch )
+PS_NOINLINE void ps_add_codestyle_batch( PS_PatternBatches *batch, uintptr_t *found, const wchar_t *pattern, const wchar_t *mask )
 {
+    if( batch && found && pattern && mask )
+    {
 
+    }
+}
+
+PS_NOINLINE void ps_find_batch( PS_PatternBatches *batch, uintptr_t start, size_t size )
+{
+    if( batch && batch->m_amount && batch->m_patterns && start && size )
+    {
+
+    }
 }

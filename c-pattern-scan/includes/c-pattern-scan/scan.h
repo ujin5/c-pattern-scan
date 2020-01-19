@@ -53,39 +53,42 @@ extern "C"
     // free a "PS_Pattern" with bytes in it
     PS_NOINLINE void ps_free_pattern( PS_Pattern *pattern );
 
-    // convert a code-style pattern string to a "PS_Pattern" type
-    // returns false on failure
-    PS_NOINLINE bool ps_build_codestyle( PS_Pattern *out_pattern, const wchar_t *pattern, const wchar_t *mask );
-
     // convert an IDA-style pattern string to a "PS_Pattern" type
     // returns false on failure
     PS_NOINLINE bool ps_build_idastyle( PS_Pattern *out_pattern, const wchar_t *pattern );
 
+    // convert a code-style pattern string to a "PS_Pattern" type
+    // returns false on failure
+    PS_NOINLINE bool ps_build_codestyle( PS_Pattern *out_pattern, const wchar_t *pattern, const wchar_t *mask );
+
     // find pattern by "PS_Pattern"
     // must construct a "PS_Pattern" from "ps_make_pattern" and "ps_add_pattern_byte", free with "ps_free_pattern"
     // returns NULL on failure
-    PS_NOINLINE uintptr_t ps_find_internal( uintptr_t start, size_t size, PS_Pattern *pattern );
-
-    // find pattern by code-style pattern
-    // example: "\xAA\xBB\xCC\x00\xDD", "xxx?x"
-    // returns NULL on failure
-    PS_NOINLINE uintptr_t ps_find_codestyle( uintptr_t start, size_t size, const wchar_t *pattern, const wchar_t *mask );
+    PS_NOINLINE uintptr_t ps_find_internal( PS_Pattern *pattern, uintptr_t start, size_t size );
 
     // find pattern by IDA-style pattern
     // example: "AA B CC ? DD" (double question marks and single bytes are supported)
     // returns NULL on failure
-    PS_NOINLINE uintptr_t ps_find_idastyle( uintptr_t start, size_t size, const wchar_t *pattern );
+    PS_NOINLINE uintptr_t ps_find_idastyle( const wchar_t *pattern, uintptr_t start, size_t size );
+
+    // find pattern by code-style pattern
+    // example: "\xAA\xBB\xCC\x00\xDD", "xxx?x"
+    // returns NULL on failure
+    PS_NOINLINE uintptr_t ps_find_codestyle( const wchar_t *pattern, const wchar_t *mask, uintptr_t start, size_t size );
 
     /* multiple patterns */
 
-    // free "PS_PatternBatches"
+    // free a "PS_PatternBatches" with patterns in it
     PS_NOINLINE void ps_free_pattern_batch( PS_PatternBatches *batch );
 
     // adds an IDA-style pattern to a "PS_PatternBatch"
+    PS_NOINLINE void ps_add_codestyle_batch( PS_PatternBatches *batch, uintptr_t *found, const wchar_t *pattern, const wchar_t *mask );
+
+    // adds a code-style pattern to a "PS_PatternBatch"
     PS_NOINLINE void ps_add_idastyle_batch( PS_PatternBatches *batch, uintptr_t *found, const wchar_t *pattern );
 
     // find all patterns in a batch
-    PS_NOINLINE void ps_find_batch( uintptr_t start, size_t size, PS_PatternBatches *batch );
+    PS_NOINLINE void ps_find_batch( PS_PatternBatches *batch, uintptr_t start, size_t size );
 
 #ifdef __cplusplus
 }
