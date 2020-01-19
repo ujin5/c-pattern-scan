@@ -17,11 +17,11 @@ Heres a simple IDA-style pattern scanning example in C++:
 ```
 #include <c-pattern-scan/scan.h>
 
+wchar_t   *pattern   = L"AA BB CC ? DD"; // some arbitrary order of bytes
 uintptr_t scan_start = 0x1000;           // some arbitrary address
 size_t    scan_size  = 5000;             // scan 5000 bytes
-wchar_t   *pattern   = L"AA BB CC ? DD"; // some arbitrary order of bytes
 
-const auto found = ps_find_idastyle( scan_start, scan_size, pattern ); // find bytes, returns 0 on failure
+const auto found = ps_find_idastyle( pattern, scan_start, scan_size ); // find bytes, returns 0 on failure
 if( found )
 {
     std::wcout << std::uppercase << std::hex << std::setfill( L'0' ) << std::setw( 2 );
