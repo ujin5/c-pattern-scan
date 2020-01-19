@@ -57,6 +57,16 @@ int __cdecl wmain( int argc, wchar_t **argv, wchar_t **envp )
         L"xxxxx??x??xxxxx"
     );
 
+    // PS_PatternBatches batch;
+    //
+    // uintptr_t batch_found_1 = 0;
+    // uintptr_t batch_found_2 = 0;
+    //
+    // ps_add_idastyle_batch( &batch, &batch_found_1, L"AA BB CC ? DD" );
+    // ps_add_idastyle_batch( &batch, &batch_found_2, L"AA BB CC ? DD" );
+    //
+    // ps_find_batch( bytes.size(), bytes.size(), &batch );
+
     // print results
     print_scan_result( found_1, pattern_bytes );
     print_scan_result( found_2, pattern_bytes );

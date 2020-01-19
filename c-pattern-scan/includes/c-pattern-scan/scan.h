@@ -17,15 +17,21 @@ typedef struct PS_PatternByte
 
 typedef struct PS_Pattern
 {
-    size_t         m_amount;  // amount of bytes in array
+    uint8_t        m_amount;  // amount of bytes in array
     PS_PatternByte **m_bytes; // array of bytes
 } PS_Pattern;
 
 typedef struct PS_PatternBatch
 {
-    size_t     m_amount;     // amount of patterns in array
-    PS_Pattern **m_patterns; // array of patterns
+    PS_Pattern *m_pattern; // input pattern
+    uintptr_t  *m_addr;    // output address
 } PS_PatternBatch;
+
+typedef struct PS_PatternBatches
+{
+    uint8_t         m_amount;     // amount of patterns in array
+    PS_PatternBatch **m_patterns; // array of batched patterns
+} PS_PatternBatches;
 
 /* funcs */
 
@@ -34,9 +40,14 @@ extern "C"
 {
 #endif
 
-    // construct "PS_Pattern", must be freed with "ps_free_pattern"
+    /* single pattern */
+
+    // construct "PS_Pattern", must be freed with "ps_free_pattern" after use
+    PS_NOINLINE PS_Pattern ps_make_pattern();
+
+    // construct "PS_PatternByte", must be freed with "ps_free_pattern"
     // returns NULL on failure
-    PS_NOINLINE PS_Pattern *ps_make_pattern();
+    PS_NOINLINE PS_PatternByte *ps_make_pattern_byte( uint8_t value, bool is_wildcard );
 
     // attempt to add a byte to a "PS_Pattern", byte must be created with "ps_make_pattern_byte"
     // returns false on failure
@@ -45,17 +56,13 @@ extern "C"
     // free "PS_Pattern"
     PS_NOINLINE void ps_free_pattern( PS_Pattern *pattern );
 
-    // construct "PS_PatternByte", must be freed with "ps_free_pattern"
-    // returns NULL on failure
-    PS_NOINLINE PS_PatternByte *ps_make_pattern_byte( uint8_t value, bool is_wildcard );
-
     // convert a code-style pattern string to a "PS_Pattern" type
-    // returns NULL on failure
-    PS_NOINLINE PS_Pattern *ps_build_codestyle( const wchar_t *pattern, const wchar_t *mask );
+    // returns false on failure
+    PS_NOINLINE bool ps_build_codestyle( PS_Pattern *out_pattern, const wchar_t *pattern, const wchar_t *mask );
 
     // convert an IDA-style pattern string to a "PS_Pattern" type
-    // returns NULL on failure
-    PS_NOINLINE PS_Pattern *ps_build_idastyle( const wchar_t *pattern );
+    // returns false on failure
+    PS_NOINLINE bool ps_build_idastyle( PS_Pattern *out_pattern, const wchar_t *pattern );
 
     // find pattern by "PS_Pattern"
     // must construct a "PS_Pattern" from "ps_make_pattern" and "ps_add_pattern_byte", free with "ps_free_pattern"
@@ -71,6 +78,20 @@ extern "C"
     // example: "AA B CC ? DD" (double question marks and single bytes are supported)
     // returns NULL on failure
     PS_NOINLINE uintptr_t ps_find_idastyle( uintptr_t start, size_t size, const wchar_t *pattern );
+
+    /* multiple patterns */
+
+    // construct "PS_PatternBatches", must be freed with "ps_free_pattern_batch" after use
+    PS_NOINLINE PS_PatternBatches ps_make_pattern_batch();
+
+    // free "PS_PatternBatches"
+    PS_NOINLINE void ps_free_pattern_batch( PS_PatternBatches *batch );
+
+    // adds an IDA-style pattern to a "PS_PatternBatch"
+    PS_NOINLINE void ps_add_idastyle_batch( PS_PatternBatches *batch, uintptr_t *found, const wchar_t *pattern );
+
+    // find all patterns in a batch
+    PS_NOINLINE void ps_find_batch( uintptr_t start, size_t size, PS_PatternBatches *batch );
 
 #ifdef __cplusplus
 }
