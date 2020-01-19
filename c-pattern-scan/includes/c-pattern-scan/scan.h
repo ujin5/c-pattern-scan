@@ -42,10 +42,7 @@ extern "C"
 
     /* single pattern */
 
-    // construct "PS_Pattern", must be freed with "ps_free_pattern" after use
-    PS_NOINLINE PS_Pattern ps_make_pattern();
-
-    // construct "PS_PatternByte", must be freed with "ps_free_pattern"
+    // construct "PS_PatternByte", must be freed
     // returns NULL on failure
     PS_NOINLINE PS_PatternByte *ps_make_pattern_byte( uint8_t value, bool is_wildcard );
 
@@ -53,7 +50,7 @@ extern "C"
     // returns false on failure
     PS_NOINLINE bool ps_add_pattern_byte( PS_Pattern *pattern, PS_PatternByte *byte );
 
-    // free "PS_Pattern"
+    // free a "PS_Pattern" with bytes in it
     PS_NOINLINE void ps_free_pattern( PS_Pattern *pattern );
 
     // convert a code-style pattern string to a "PS_Pattern" type
@@ -80,9 +77,6 @@ extern "C"
     PS_NOINLINE uintptr_t ps_find_idastyle( uintptr_t start, size_t size, const wchar_t *pattern );
 
     /* multiple patterns */
-
-    // construct "PS_PatternBatches", must be freed with "ps_free_pattern_batch" after use
-    PS_NOINLINE PS_PatternBatches ps_make_pattern_batch();
 
     // free "PS_PatternBatches"
     PS_NOINLINE void ps_free_pattern_batch( PS_PatternBatches *batch );
