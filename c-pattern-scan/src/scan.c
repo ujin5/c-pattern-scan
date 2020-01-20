@@ -21,7 +21,7 @@ PS_NOINLINE bool ps_add_pattern_byte( PS_Pattern *pattern, PS_PatternByte *byte 
     if( pattern && byte )
     {
         // save off last amount and increment total
-        uint8_t amount = pattern->m_amount++;
+        size_t amount = pattern->m_amount++;
 
         // make more room if needed and add a new byte
         PS_PatternByte **bytes = (PS_PatternByte **)( realloc( pattern->m_bytes, sizeof( PS_PatternByte * ) * ( (size_t)amount + 1 ) ) );
@@ -41,20 +41,13 @@ PS_NOINLINE void ps_free_pattern( PS_Pattern *pattern )
 {
     if( pattern )
     {
-        if( pattern->m_bytes )
+        // free each byte
+        for( uint8_t i = 0; i < pattern->m_amount; ++i )
         {
-            // free each byte
-            for( uint8_t i = 0; i < pattern->m_amount; ++i )
-            {
-                PS_PatternByte *byte = pattern->m_bytes[ i ];
-                if( byte )
-                {
-                    free( byte );
-                }
-            }
-
-            free( pattern->m_bytes );
+            free( pattern->m_bytes[ i ] );
         }
+
+        free( pattern->m_bytes );
     }
 }
 
@@ -83,8 +76,6 @@ PS_NOINLINE bool ps_build_idastyle( PS_Pattern *out_pattern, const wchar_t *patt
                     token = wcstok_s( 0, L" ", &next_token )
                 )
                 {
-                    PS_PatternByte *byte;
-
                     // make sure tokens aren't too long
                     size_t token_len = wcslen( token );
                     if( !token_len || token_len > 2 )
@@ -94,6 +85,8 @@ PS_NOINLINE bool ps_build_idastyle( PS_Pattern *out_pattern, const wchar_t *patt
 
                         break;
                     }
+
+                    PS_PatternByte *byte;
 
                     if( token[ 0 ] == L'?' ) // wildcard
                     {
@@ -220,7 +213,7 @@ PS_NOINLINE uintptr_t ps_find_internal( PS_Pattern *pattern, uintptr_t start, si
             }
 
             // are we done? return the address to the first match
-            if( matched == pattern->m_amount )
+            if( matched >= pattern->m_amount )
                 return found;
         }
     }
@@ -230,14 +223,11 @@ PS_NOINLINE uintptr_t ps_find_internal( PS_Pattern *pattern, uintptr_t start, si
 
 PS_NOINLINE uintptr_t ps_find_idastyle( const wchar_t *pattern, uintptr_t start, size_t size )
 {
-    if( pattern && start && size )
-    {
-        PS_Pattern ptrn;
+    PS_Pattern ptrn;
 
-        if( ps_build_idastyle( &ptrn, pattern ) )
-        {
-            return ps_find_internal( &ptrn, start, size );
-        }
+    if( ps_build_idastyle( &ptrn, pattern ) )
+    {
+        return ps_find_internal( &ptrn, start, size );
     }
 
     return 0;
@@ -245,14 +235,11 @@ PS_NOINLINE uintptr_t ps_find_idastyle( const wchar_t *pattern, uintptr_t start,
 
 PS_NOINLINE uintptr_t ps_find_codestyle( const wchar_t *pattern, const wchar_t *mask, uintptr_t start, size_t size )
 {
-    if( pattern && mask && start && size )
-    {
-        PS_Pattern ptrn;
+    PS_Pattern ptrn;
 
-        if( ps_build_codestyle( &ptrn, pattern, mask ) )
-        {
-            return ps_find_internal( &ptrn, start, size );
-        }
+    if( ps_build_codestyle( &ptrn, pattern, mask ) )
+    {
+        return ps_find_internal( &ptrn, start, size );
     }
 
     return 0;
