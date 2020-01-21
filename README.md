@@ -2,7 +2,7 @@
 
 A simple Pattern scanning / Signature scanning library written in C99.
 
-**This project is still a work in progress.**
+**This project is still a work in progress, Not all features are currently implemented.**
 
 ## Features and compatibility
 * Supports both C and C++ linking.
