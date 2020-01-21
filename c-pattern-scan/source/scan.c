@@ -51,33 +51,32 @@ PS_NOINLINE void ps_free_pattern( PS_Pattern *pattern )
     }
 }
 
-PS_NOINLINE bool ps_build_idastyle( PS_Pattern *out_pattern, const wchar_t *pattern )
+PS_NOINLINE bool ps_build_idastyle( PS_Pattern *out_pattern, const char *pattern )
 {
     if( out_pattern && pattern )
     {
-        size_t ptrn_len = wcslen( pattern );
+        size_t ptrn_len = strlen( pattern );
         if( ptrn_len )
         {
             // make a copy of the input string
-            wchar_t *str = _wcsdup( pattern );
+            char *str = strdup( pattern );
 
             // clean up the input string
-            str = util_trim_pattern_wstr( str );
+            str = util_trim_pattern_str( str );
             if( str )
             {
-                bool       valid       = true;
-                wchar_t    *next_token = 0;
-                PS_Pattern out         = { 0 };
+                bool       valid = true;
+                PS_Pattern out   = { 0 };
 
                 // iteratively split the input string by space
                 for(
-                    wchar_t *token = wcstok_s( str, L" ", &next_token );
+                    char *token = strtok( str, " " );
                     token;
-                    token = wcstok_s( 0, L" ", &next_token )
+                    token = strtok( 0, " " )
                 )
                 {
                     // make sure tokens aren't too long
-                    size_t token_len = wcslen( token );
+                    size_t token_len = strlen( token );
                     if( !token_len || token_len > 2 )
                     {
                         ps_free_pattern( &out );
@@ -113,9 +112,9 @@ PS_NOINLINE bool ps_build_idastyle( PS_Pattern *out_pattern, const wchar_t *patt
                         // ensure the current token is a valid byte (should only be 1 or 2 chars and valid hex digit(s))
                         bool is_valid_byte = false;
 
-                        if( token_len == 1 && iswxdigit( token[ 0 ] ) ) // 1-char
+                        if( token_len == 1 && isxdigit( token[ 0 ] ) ) // 1-char
                             is_valid_byte = true;
-                        else if( token_len == 2 && iswxdigit( token[ 0 ] ) && iswxdigit( token[ 1 ] ) ) // 2-char
+                        else if( token_len == 2 && isxdigit( token[ 0 ] ) && isxdigit( token[ 1 ] ) ) // 2-char
                             is_valid_byte = true;
 
                         if( !is_valid_byte )
@@ -127,7 +126,7 @@ PS_NOINLINE bool ps_build_idastyle( PS_Pattern *out_pattern, const wchar_t *patt
                         }
 
                         // attempt to convert the string to a base 16 int and make sure it's in bounds of a uint8_t
-                        ulong_t val = wcstoul( token, 0, 16 );
+                        ulong_t val = strtoul( token, 0, 16 );
                         if( !val || val == ULONG_MAX || val > UINT8_MAX )
                         {
                             ps_free_pattern( &out );
@@ -170,20 +169,17 @@ PS_NOINLINE bool ps_build_idastyle( PS_Pattern *out_pattern, const wchar_t *patt
     return false;
 }
 
-PS_NOINLINE bool ps_build_codestyle( PS_Pattern *out_pattern, const wchar_t *pattern, const wchar_t *mask )
+PS_NOINLINE bool ps_build_codestyle( PS_Pattern *out_pattern, const char *pattern, const char *mask )
 {
     if( out_pattern && pattern && mask )
     {
-        // while( true )
-        // {
-        //
-        // }
+
     }
 
     return false;
 }
 
-PS_NOINLINE uintptr_t ps_find_internal( PS_Pattern *pattern, uintptr_t start, size_t size )
+PS_NOINLINE uintptr_t ps_find( PS_Pattern *pattern, uintptr_t start, size_t size )
 {
     if( pattern && pattern->m_amount && pattern->m_bytes && start && size )
     {
@@ -224,25 +220,25 @@ PS_NOINLINE uintptr_t ps_find_internal( PS_Pattern *pattern, uintptr_t start, si
     return 0;
 }
 
-PS_NOINLINE uintptr_t ps_find_idastyle( const wchar_t *pattern, uintptr_t start, size_t size )
+PS_NOINLINE uintptr_t ps_find_idastyle( const char *pattern, uintptr_t start, size_t size )
 {
     PS_Pattern ptrn;
 
     if( ps_build_idastyle( &ptrn, pattern ) )
     {
-        return ps_find_internal( &ptrn, start, size );
+        return ps_find( &ptrn, start, size );
     }
 
     return 0;
 }
 
-PS_NOINLINE uintptr_t ps_find_codestyle( const wchar_t *pattern, const wchar_t *mask, uintptr_t start, size_t size )
+PS_NOINLINE uintptr_t ps_find_codestyle( const char *pattern, const char *mask, uintptr_t start, size_t size )
 {
     PS_Pattern ptrn;
 
     if( ps_build_codestyle( &ptrn, pattern, mask ) )
     {
-        return ps_find_internal( &ptrn, start, size );
+        return ps_find( &ptrn, start, size );
     }
 
     return 0;
@@ -256,7 +252,7 @@ PS_NOINLINE void ps_free_pattern_batch( PS_PatternBatches *batch )
     }
 }
 
-PS_NOINLINE void ps_add_idastyle_batch( PS_PatternBatches *batch, uintptr_t *found, const wchar_t *pattern )
+PS_NOINLINE void ps_add_idastyle_batch( PS_PatternBatches *batch, uintptr_t *found, const char *pattern )
 {
     if( batch && found && pattern )
     {
@@ -264,7 +260,7 @@ PS_NOINLINE void ps_add_idastyle_batch( PS_PatternBatches *batch, uintptr_t *fou
     }
 }
 
-PS_NOINLINE void ps_add_codestyle_batch( PS_PatternBatches *batch, uintptr_t *found, const wchar_t *pattern, const wchar_t *mask )
+PS_NOINLINE void ps_add_codestyle_batch( PS_PatternBatches *batch, uintptr_t *found, const char *pattern, const char *mask )
 {
     if( batch && found && pattern && mask )
     {
