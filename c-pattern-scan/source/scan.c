@@ -1,6 +1,6 @@
 #include "includes.h"
-#include "c-pattern-scan/scan.h"
 #include "utils.h"
+#include "scan.h"
 
 PS_NOINLINE PS_PatternByte *ps_make_pattern_byte( uint8_t value, bool is_wildcard )
 {
@@ -42,7 +42,7 @@ PS_NOINLINE void ps_free_pattern( PS_Pattern *pattern )
     if( pattern )
     {
         // free each byte
-        for( uint8_t i = 0; i < pattern->m_amount; ++i )
+        for( size_t i = 0; i < pattern->m_amount; ++i )
         {
             free( pattern->m_bytes[ i ] );
         }
@@ -174,7 +174,10 @@ PS_NOINLINE bool ps_build_codestyle( PS_Pattern *out_pattern, const wchar_t *pat
 {
     if( out_pattern && pattern && mask )
     {
-
+        // while( true )
+        // {
+        //
+        // }
     }
 
     return false;
@@ -190,7 +193,7 @@ PS_NOINLINE uintptr_t ps_find_internal( PS_Pattern *pattern, uintptr_t start, si
         // iterate over the range of memory
         for( uintptr_t i = start; i < ( start + size ); ++i )
         {
-            if( pattern->m_bytes[ matched ]->m_is_wildcard ) // wildcards are always a 'match'
+            if( pattern->m_bytes[ matched ]->m_is_wildcard ) // wildcards are always a "match"
             {
                 ++matched;
             }

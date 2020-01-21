@@ -15,15 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="includes.h">
+    <ClInclude Include="..\..\c-pattern-scan\include\c-pattern-scan\scan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rand.h">
+    <ClInclude Include="..\..\c-pattern-scan\source\includes\includes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\c-pattern-scan\source\includes\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="..\..\c-pattern-scan\source\scan.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\c-pattern-scan\source\utils.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

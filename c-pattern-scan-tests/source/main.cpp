@@ -43,13 +43,14 @@ int __cdecl wmain( int argc, wchar_t **argv, wchar_t **envp )
     // place some pattern of bytes in the middle
     std::copy( pattern_bytes.begin(), pattern_bytes.end(), bytes.begin() + 512 );
 
-    // scan for them
+    // IDA-style pattern
     const auto found_1 = ps_find_idastyle(
         L"??? ?  ?  ?55 48 89 E5 89 ? ? 8B ? ? 0F AF C0 5D C3? ?  ?   ? ?? ???",
         (uintptr_t)( bytes.data() ),
         bytes.size()
     );
 
+    // code-style pattern
     const auto found_2 = ps_find_codestyle(
         L"\x55\x48\x89\xE5\x89\x00\x00\x8B\x00\x00\x0F\xAF\xC0\x5D\xC3",
         L"xxxxx??x??xxxxx",
@@ -57,6 +58,7 @@ int __cdecl wmain( int argc, wchar_t **argv, wchar_t **envp )
         bytes.size()
     );
 
+    // find multiple patterns in one pass
     // PS_PatternBatches batch;
     //
     // uintptr_t batch_found_1 = 0;
@@ -67,7 +69,7 @@ int __cdecl wmain( int argc, wchar_t **argv, wchar_t **envp )
     //
     // ps_find_batch( bytes.size(), bytes.size(), &batch );
 
-    // print results
+    // print all results
     print_scan_result( found_1, pattern_bytes );
     print_scan_result( found_2, pattern_bytes );
 
