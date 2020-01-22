@@ -16,7 +16,7 @@ The `build` directory includes Visual Studio Solutions and CMake files.
 The built libraries and binaries are placed into the `lib` and `bin` directories... in the respective build directories.
 
 ## Usage
-Add the `c-pattern-scan/includes` directory to your includes path and include the `c-pattern-scan/scan.h` header, then link with the library and you're ready to go.
+Add the `includes` directory to your includes path, include the `c-pattern-scan/scan.h` header, link with the library and you're ready to go.
 
 Heres a simple IDA-style pattern scanning example in C++:
 ```

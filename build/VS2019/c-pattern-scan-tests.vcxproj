@@ -11,11 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\c-pattern-scan-tests\source\main.cpp" />
+    <ClInclude Include="..\..\c-pattern-scan-tests\include\includes.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\c-pattern-scan-tests\source\include\includes.h" />
-    <ClInclude Include="..\..\c-pattern-scan-tests\source\include\rand.h" />
+    <ClCompile Include="..\..\c-pattern-scan-tests\source\main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -53,7 +52,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)..\..\c-pattern-scan\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\include\;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\</OutDir>
     <GenerateManifest>false</GenerateManifest>
     <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
@@ -72,7 +71,7 @@
       </SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;NOMINMAX;VC_EXTRALEAN;WIN32_LEAN_AND_MEAN;_ITERATOR_DEBUG_LEVEL=0;_HAS_EXCEPTIONS=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\c-pattern-scan-tests\source\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\c-pattern-scan-tests\include\</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <SupportJustMyCode>false</SupportJustMyCode>
       <Optimization>MaxSpeed</Optimization>

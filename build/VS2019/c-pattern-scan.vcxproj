@@ -11,13 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\c-pattern-scan\source\scan.c" />
-    <ClCompile Include="..\..\c-pattern-scan\source\utils.c" />
+    <ClInclude Include="..\..\c-pattern-scan\include\includes.h" />
+    <ClInclude Include="..\..\c-pattern-scan\include\utils.h" />
+    <ClInclude Include="..\..\include\c-pattern-scan\scan.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\c-pattern-scan\include\c-pattern-scan\scan.h" />
-    <ClInclude Include="..\..\c-pattern-scan\source\include\includes.h" />
-    <ClInclude Include="..\..\c-pattern-scan\source\include\utils.h" />
+    <ClCompile Include="..\..\c-pattern-scan\source\scan.c" />
+    <ClCompile Include="..\..\c-pattern-scan\source\utils.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -114,7 +114,7 @@
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <OmitDefaultLibName>true</OmitDefaultLibName>
       <SupportJustMyCode>false</SupportJustMyCode>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\c-pattern-scan\src\includes;$(SolutionDir)..\..\c-pattern-scan\includes\c-pattern-scan</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\c-pattern-scan\include;$(SolutionDir)..\..\include\c-pattern-scan</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:threadSafeInit- /EHa- /Gw %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -171,7 +171,7 @@
       <CallingConvention>FastCall</CallingConvention>
       <CompileAs>CompileAsC</CompileAs>
       <UseFullPaths>true</UseFullPaths>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\c-pattern-scan\source\include;$(SolutionDir)..\..\c-pattern-scan\include\c-pattern-scan</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\c-pattern-scan\include\;$(SolutionDir)..\..\include\c-pattern-scan\</AdditionalIncludeDirectories>
       <SupportJustMyCode>false</SupportJustMyCode>
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>

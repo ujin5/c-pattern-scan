@@ -2,14 +2,13 @@
 
 static void print_scan_result( uintptr_t found, uintptr_t expected, const std::vector< uint8_t > &bytes )
 {
-    if( !found || bytes.empty() || found != expected )
+    if( found != expected )
     {
+        std::cout << "Pattern not found, expected: 0x" << expected << std::endl;
         return;
     }
 
-    std::cout << std::setfill( '0' ) << std::setw( 2 ) << std::uppercase << std::hex;
     std::cout << "found: 0x" << found << std::endl << std::endl;
-
     std::cout << "[";
 
     const auto size = bytes.size();
@@ -69,11 +68,14 @@ int __cdecl main( int argc, char **argv, char **envp )
     //
     // ps_find_batch( bytes.size(), bytes.size(), &batch );
 
-    // print all results
-    const auto expected = (uintptr_t)( &bytes[ 512 ] );
+    // set cout options
+    std::cout << std::setfill( '0' ) << std::setw( 2 ) << std::uppercase << std::hex;
 
-    print_scan_result( found_1, expected, pattern_bytes );
-    print_scan_result( found_2, expected, pattern_bytes );
+    // print all results
+    const auto expected_1 = (uintptr_t)( &bytes[ 512 ] );
+
+    print_scan_result( found_1, expected_1, pattern_bytes );
+    print_scan_result( found_2, expected_1, pattern_bytes );
 
     std::cout << "Press any key to continue...";
     _getwch();
