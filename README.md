@@ -8,7 +8,7 @@ A simple Pattern scanning / Signature scanning library written in C99.
 * Supports both C and C++ linking.
 * Supports both code-style and IDA-style patterns.
 * Small memory footprint; simple codebase.
-* Portable! Works on any architecture with a compiler that abides by C99 standards. **Currently only tested on x86 and x86-64**
+* Portable! Works on any architecture with a compiler that abides by C99 standards. **Currently only tested on x86 and x86-64**.
 
 ## Building
 The `build` directory includes Visual Studio Solutions and CMake files.
