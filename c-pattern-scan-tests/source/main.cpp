@@ -1,8 +1,8 @@
 #include "includes.h"
 
-static void print_scan_result( uintptr_t found, const std::vector< uint8_t > &bytes )
+static void print_scan_result( uintptr_t found, uintptr_t expected, const std::vector< uint8_t > &bytes )
 {
-    if( !found || bytes.empty() )
+    if( !found || bytes.empty() || found != expected )
     {
         return;
     }
@@ -70,8 +70,10 @@ int __cdecl main( int argc, char **argv, char **envp )
     // ps_find_batch( bytes.size(), bytes.size(), &batch );
 
     // print all results
-    print_scan_result( found_1, pattern_bytes );
-    print_scan_result( found_2, pattern_bytes );
+    const auto expected = (uintptr_t)( &bytes[ 512 ] );
+
+    print_scan_result( found_1, expected, pattern_bytes );
+    print_scan_result( found_2, expected, pattern_bytes );
 
     std::cout << "Press any key to continue...";
     _getwch();

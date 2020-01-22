@@ -53,31 +53,42 @@ PS_NOINLINE void ps_free_pattern( PS_Pattern *pattern )
 
 PS_NOINLINE bool ps_build_idastyle( PS_Pattern *out_pattern, const char *pattern )
 {
-    if( out_pattern && pattern )
+    if( out_pattern && pattern && strlen( pattern ) )
     {
-        size_t ptrn_len = strlen( pattern );
-        if( ptrn_len )
+        // make a copy of the input string
+        char *str = strdup( pattern );
+
+        // clean up the input string
+        str = util_trim_pattern_str( str );
+        if( str )
         {
-            // make a copy of the input string
-            char *str = strdup( pattern );
+            bool       valid = true;
+            PS_Pattern out   = { 0 };
 
-            // clean up the input string
-            str = util_trim_pattern_str( str );
-            if( str )
+            // iteratively split the input string by space
+            for(
+                char *token = strtok( str, " " );
+                token;
+                token = strtok( 0, " " )
+            )
             {
-                bool       valid = true;
-                PS_Pattern out   = { 0 };
-
-                // iteratively split the input string by space
-                for(
-                    char *token = strtok( str, " " );
-                    token;
-                    token = strtok( 0, " " )
-                )
+                // make sure tokens aren't too long
+                size_t token_len = strlen( token );
+                if( !token_len || token_len > 2 )
                 {
-                    // make sure tokens aren't too long
-                    size_t token_len = strlen( token );
-                    if( !token_len || token_len > 2 )
+                    ps_free_pattern( &out );
+                    valid = false;
+
+                    break;
+                }
+
+                PS_PatternByte *byte;
+
+                if( token[ 0 ] == L'?' ) // wildcard
+                {
+                    // add a wildcard byte to array
+                    byte = ps_make_pattern_byte( 0, true );
+                    if( !byte )
                     {
                         ps_free_pattern( &out );
                         valid = false;
@@ -85,83 +96,68 @@ PS_NOINLINE bool ps_build_idastyle( PS_Pattern *out_pattern, const char *pattern
                         break;
                     }
 
-                    PS_PatternByte *byte;
-
-                    if( token[ 0 ] == L'?' ) // wildcard
+                    if( !ps_add_pattern_byte( &out, byte ) )
                     {
-                        // add a wildcard byte to array
-                        byte = ps_make_pattern_byte( 0, true );
-                        if( !byte )
-                        {
-                            ps_free_pattern( &out );
-                            valid = false;
+                        ps_free_pattern( &out );
+                        valid = false;
 
-                            break;
-                        }
-
-                        if( !ps_add_pattern_byte( &out, byte ) )
-                        {
-                            ps_free_pattern( &out );
-                            valid = false;
-
-                            break;
-                        }
-                    }
-                    else // probably a byte
-                    {
-                        // ensure the current token is a valid byte (should only be 1 or 2 chars and valid hex digit(s))
-                        bool is_valid_byte = false;
-
-                        if( token_len == 1 && isxdigit( token[ 0 ] ) ) // 1-char
-                            is_valid_byte = true;
-                        else if( token_len == 2 && isxdigit( token[ 0 ] ) && isxdigit( token[ 1 ] ) ) // 2-char
-                            is_valid_byte = true;
-
-                        if( !is_valid_byte )
-                        {
-                            ps_free_pattern( &out );
-                            valid = false;
-
-                            break;
-                        }
-
-                        // attempt to convert the string to a base 16 int and make sure it's in bounds of a uint8_t
-                        ulong_t val = strtoul( token, 0, 16 );
-                        if( !val || val == ULONG_MAX || val > UINT8_MAX )
-                        {
-                            ps_free_pattern( &out );
-                            valid = false;
-
-                            break;
-                        }
-
-                        // add normal byte to array
-                        byte = ps_make_pattern_byte( (uint8_t)val, false );
-                        if( !byte )
-                        {
-                            ps_free_pattern( &out );
-                            valid = false;
-
-                            break;
-                        }
-
-                        if( !ps_add_pattern_byte( &out, byte ) )
-                        {
-                            ps_free_pattern( &out );
-                            valid = false;
-
-                            break;
-                        }
+                        break;
                     }
                 }
-
-                free( str );
-
-                if( valid )
+                else // probably a byte
                 {
-                    *out_pattern = out;
-                    return true;
+                    // ensure the current token is a valid byte (should only be 1 or 2 chars and valid hex digit(s))
+                    bool is_valid_byte = false;
+
+                    if( token_len == 1 && isxdigit( token[ 0 ] ) ) // 1-char
+                        is_valid_byte = true;
+                    else if( token_len == 2 && isxdigit( token[ 0 ] ) && isxdigit( token[ 1 ] ) ) // 2-char
+                        is_valid_byte = true;
+
+                    if( !is_valid_byte )
+                    {
+                        ps_free_pattern( &out );
+                        valid = false;
+
+                        break;
+                    }
+
+                    // attempt to convert the string to a base 16 int and make sure it's in bounds of a uint8_t
+                    ulong_t val = strtoul( token, 0, 16 );
+                    if( !val || val == ULONG_MAX || val > UINT8_MAX )
+                    {
+                        ps_free_pattern( &out );
+                        valid = false;
+
+                        break;
+                    }
+
+                    // add normal byte to array
+                    byte = ps_make_pattern_byte( (uint8_t)val, false );
+                    if( !byte )
+                    {
+                        ps_free_pattern( &out );
+                        valid = false;
+
+                        break;
+                    }
+
+                    if( !ps_add_pattern_byte( &out, byte ) )
+                    {
+                        ps_free_pattern( &out );
+                        valid = false;
+
+                        break;
+                    }
                 }
+            }
+
+            free( str );
+
+            if( valid )
+            {
+                *out_pattern = out;
+                return true;
             }
         }
     }
@@ -183,35 +179,31 @@ PS_NOINLINE uintptr_t ps_find( PS_Pattern *pattern, uintptr_t start, size_t size
 {
     if( pattern && pattern->m_amount && pattern->m_bytes && start && size )
     {
-        uintptr_t found   = 0;
-        uint8_t   matched = 0;
+        uint8_t   *scan_start = (uint8_t *)start;
+        uint8_t   *scan_end   = (uint8_t *)( start + size );
+        size_t    matched     = 0;
+        uintptr_t found       = 0;
 
         // iterate over the range of memory
-        for( uintptr_t i = start; i < ( start + size ); ++i )
+        for( uint8_t *i = scan_start; i < scan_end; ++i )
         {
-            if( pattern->m_bytes[ matched ]->m_is_wildcard ) // wildcards are always a "match"
+            PS_PatternByte *byte = pattern->m_bytes[ matched ];
+
+            if( byte->m_value == *i || byte->m_is_wildcard ) // compare byte value. also, wildcards are always a "match"
             {
+                // first match is the "found" location
+                if( !matched )
+                    found = (uintptr_t)i;
+
                 ++matched;
             }
-            else // check byte value
+            else // didn't match
             {
-                uint8_t value = *(uint8_t *)i;
-                if( value == pattern->m_bytes[ matched ]->m_value )
-                {
-                    // save the first position
-                    if( !matched )
-                        found = i;
-
-                    ++matched;
-                }
-                else // didn't match
-                {
-                    if( matched > 0 )
-                        --matched;
-                }
+                matched = 0;
+                found   = 0;
             }
 
-            // are we done? return the address to the first match
+            // if all matched then return the address to the first match
             if( matched >= pattern->m_amount )
                 return found;
         }
