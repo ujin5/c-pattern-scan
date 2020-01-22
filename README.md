@@ -8,7 +8,7 @@ A simple Pattern scanning / Signature scanning library written in C99.
 * Supports both C and C++ linking.
 * Supports both code-style and IDA-style patterns.
 * Small memory footprint; simple codebase.
-* Portable! Works on any architecture with a compiler that abides by C99 standards. **Currently only tested on x86 and x86-64**
+* Portable! Works on any architecture with a compiler that abides by C99 standards. **Currently only tested on x86 and x86-64**.
 
 ## Building
 The `build` directory includes Visual Studio Solutions and CMake files.
@@ -39,8 +39,8 @@ if( found )
 
 cosnt char *pattern   = "\xAA\xBB\xCC\x00\xDD\xEE"; // some unique order of bytes
 cosnt char *mask      = "xxx?xx"                    // the mask for the pattern above
-uintptr_t  scan_start = 0x1000;                      // some arbitrary address
-size_t     scan_size  = 5000;                        // scan 5000 bytes
+uintptr_t  scan_start = 0x1000;                     // some arbitrary address
+size_t     scan_size  = 5000;                       // scan 5000 bytes
 
 const auto found = ps_find_codestyle( pattern, mask, scan_start, scan_size ); // find bytes, returns 0 on failure
 if( found )
