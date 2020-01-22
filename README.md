@@ -54,4 +54,6 @@ Give the `c-pattern-scan/scan.h` header a read through for some extra functional
 Theres also an included `c-pattern-scan-tests` project with some examples.
 
 ## Contributing
-Anyone is allowed to contribute! Please feel free to make pull requests with suggestions, changes or fixes and I will review it when I have time.
+Anyone is allowed to contribute! Please feel free to make Issues with suggestions, improvements or fixes.
+
+Pull requests are fine too! I will review them when I have time.
